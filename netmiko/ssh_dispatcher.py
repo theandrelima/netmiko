@@ -1,4 +1,5 @@
 """Controls selection of proper class based on the device type."""
+import logging
 from netmiko.a10 import A10SSH
 from netmiko.accedian import AccedianSSH
 from netmiko.adtran import AdtranOSSSH, AdtranOSTelnet
@@ -314,6 +315,7 @@ telnet_platforms_str = "\n" + telnet_platforms_str
 
 def ConnectHandler(*args, **kwargs):
     """Factory function selects the proper class and creates object based on device_type."""
+    print("BATMAN: inside netmiko.ssh_dispatcher ConnectHandler")
     device_type = kwargs["device_type"]
     if device_type not in platforms:
         if device_type is None:
@@ -324,12 +326,14 @@ def ConnectHandler(*args, **kwargs):
             "Unsupported 'device_type' "
             "currently supported platforms are: {}".format(msg_str)
         )
+    print(f"BATMAN: calling ConnectionClass = ssh_dispatcher({device_type})")
     ConnectionClass = ssh_dispatcher(device_type)
     return ConnectionClass(*args, **kwargs)
 
 
 def ssh_dispatcher(device_type):
     """Select the class to be instantiated based on vendor/platform."""
+    print(f"BATMAN: CLASS_MAPPER[device_type] = {CLASS_MAPPER[device_type]}")
     return CLASS_MAPPER[device_type]
 
 
