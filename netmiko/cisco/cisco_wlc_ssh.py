@@ -11,10 +11,12 @@ class CiscoWlcSSH(BaseConnection):
     """Netmiko Cisco WLC support."""
 
     def __init__(self, *args, **kwargs):
-        print("CiscoWlcSSH.__init__")
+        # print("CiscoWlcSSH.__init__")
         # WLC/AireOS has an issue where you can get "No Existing Session" with
         # the default conn_timeout (so increase conn_timeout to 10-seconds).
         kwargs.setdefault("conn_timeout", 10)
+        print(f"CiscoWlcSSH args = {args}")
+        print(f"CiscoWlcSSH kwargs = {kwargs}")
         return super().__init__(*args, **kwargs)
 
     def special_login_handler(self, delay_factor=1):
@@ -29,6 +31,7 @@ class CiscoWlcSSH(BaseConnection):
         Password:****
         """
         print("CiscoWlcSSH.special_login_handler")
+        print(f"BATMAN: self = {self}")
         delay_factor = self.select_delay_factor(delay_factor)
         i = 0
         time.sleep(delay_factor * 0.5)
@@ -37,8 +40,10 @@ class CiscoWlcSSH(BaseConnection):
             output = self.read_channel()
             if output:
                 if "login as" in output or "User:" in output:
+                    print(f"username: {self.username}, self.RETURN = {self.RETURN}")
                     self.write_channel(self.username + self.RETURN)
                 elif "Password" in output:
+                    print(f"password: {self.password}, self.RETURN = {self.RETURN}")
                     self.write_channel(self.password + self.RETURN)
                     break
                 time.sleep(delay_factor * 1)
@@ -55,7 +60,7 @@ class CiscoWlcSSH(BaseConnection):
         handling.
         Arguments are the same as send_command_timing() method
         """
-        print("CiscoWlcSSH.send_command_w_enter")
+        # print("CiscoWlcSSH.send_command_w_enter")
         if len(args) > 1:
             raise ValueError("Must pass in delay_factor as keyword argument")
 
@@ -107,7 +112,7 @@ class CiscoWlcSSH(BaseConnection):
         Even though pagination is disabled
         Arguments are the same as send_command_timing() method
         """
-        print("CiscoWlcSSH.send_command_w_yes")
+        # print("CiscoWlcSSH.send_command_w_yes")
         if len(args) > 1:
             raise ValueError("Must pass in delay_factor as keyword argument")
 
@@ -137,7 +142,7 @@ class CiscoWlcSSH(BaseConnection):
 
         Cisco WLC uses "config paging disable" to disable paging
         """
-        print("CiscoWlcSSH.session_preparation")
+        # print("CiscoWlcSSH.session_preparation")
         self._test_channel_read()
 
         try:
@@ -153,7 +158,7 @@ class CiscoWlcSSH(BaseConnection):
 
     def cleanup(self, command="logout"):
         """Reset WLC back to normal paging and gracefully close session."""
-        print("CiscoWlcSSH.cleanup")
+        # print("CiscoWlcSSH.cleanup")
         self.send_command_timing("config paging enable")
 
         # Exit configuration mode
@@ -190,21 +195,21 @@ class CiscoWlcSSH(BaseConnection):
 
     def check_config_mode(self, check_string="config", pattern=""):
         """Checks if the device is in configuration mode or not."""
-        print("CiscoWlcSSH.check_config_mode")
+        # print("CiscoWlcSSH.check_config_mode")
         if not pattern:
             pattern = re.escape(self.base_prompt)
         return super().check_config_mode(check_string, pattern)
 
     def config_mode(self, config_command="config", pattern=""):
         """Enter into config_mode."""
-        print("CiscoWlcSSH.config_mode")
+        # print("CiscoWlcSSH.config_mode")
         if not pattern:
             pattern = re.escape(self.base_prompt)
         return super().config_mode(config_command, pattern)
 
     def exit_config_mode(self, exit_config="exit", pattern=""):
         """Exit config_mode."""
-        print("CiscoWlcSSH.exit_config_mode")
+        # print("CiscoWlcSSH.exit_config_mode")
         if not pattern:
             pattern = re.escape(self.base_prompt)
         return super().exit_config_mode(exit_config, pattern)
@@ -216,7 +221,7 @@ class CiscoWlcSSH(BaseConnection):
         enter_config_mode=False,
         **kwargs,
     ):
-        print("CiscoWlcSSH.send_config_set")
+        # print("CiscoWlcSSH.send_config_set")
         return super().send_config_set(
             config_commands=config_commands,
             exit_config_mode=exit_config_mode,
@@ -226,7 +231,7 @@ class CiscoWlcSSH(BaseConnection):
 
     def save_config(self, cmd="save config", confirm=True, confirm_response="y"):
         """Saves Config."""
-        print("CiscoWlcSSH.save_config")
+        # print("CiscoWlcSSH.save_config")
         self.enable()
         if confirm:
             output = self.send_command_timing(command_string=cmd)
