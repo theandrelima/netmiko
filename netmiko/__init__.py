@@ -3,7 +3,7 @@ import logging
 # Logging configuration
 log = logging.getLogger(__name__)  # noqa
 log.addHandler(logging.NullHandler())  # noqa
-log.setLevel(logging.DEBUG)
+# log.setLevel(logging.DEBUG)
 
 from netmiko.ssh_dispatcher import ConnectHandler
 from netmiko.ssh_dispatcher import ssh_dispatcher
