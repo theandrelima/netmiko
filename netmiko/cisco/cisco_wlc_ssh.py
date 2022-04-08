@@ -31,7 +31,6 @@ class CiscoWlcSSH(BaseConnection):
         Password:****
         """
         print("CiscoWlcSSH.special_login_handler")
-        print(f"BATMAN: self = {self}")
         delay_factor = self.select_delay_factor(delay_factor)
         i = 0
         time.sleep(delay_factor * 0.5)
